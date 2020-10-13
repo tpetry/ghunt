@@ -1,0 +1,24 @@
+name: "Docker"
+
+on: push
+
+jobs:
+  publish:
+    name: "Build & Push"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
+
+      - name: "Build and Push Docker Image"
+        uses: docker/build-push-action@v1
+        with:
+          add_git_labels: true
+          always_pull: true
+          cache_froms: ${{ github.repository }}/ghunt:latest,${{ github.repository }}/ghunt:${{ github.ref }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/ghunt
+          tag_with_ref: true
+          username: ${{ github.actor }}
+          password: ${{ github.token }}

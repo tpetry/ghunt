@@ -1,12 +1,15 @@
-FROM python:3.8.6-slim-buster
+FROM python:3.8-slim-buster
 
 ARG UID=1000
 ARG GID=1000
 
 WORKDIR /usr/src/app
 
-RUN groupadd -g ${GID} -r app && adduser --system --home /home/app --ingroup app --uid ${UID} app && \
-    chown -R app:app /usr/src/app && \
+RUN groupadd -g ${GID} -r app
+RUN adduser --system --home /home/app --ingroup app --uid ${UID} app
+RUN chown -R app:app /usr/src/app
+
+RUN set -x && \
     apt-get update && \
     apt-get install -y curl unzip gnupg && \
     curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
@@ -17,7 +20,8 @@ RUN groupadd -g ${GID} -r app && adduser --system --home /home/app --ingroup app
 
 COPY --chown=app:app requirements.txt docker/download_chromedriver.py ./
 
-RUN pip install --no-cache-dir -r requirements.txt && \
+RUN set -x && \
+    pip install --no-cache-dir -r requirements.txt && \
     python3 download_chromedriver.py
 
 COPY --chown=app:app . .
